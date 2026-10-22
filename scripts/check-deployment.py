@@ -11,7 +11,7 @@ secrets = dict(line.split('=', 1) for line in (Path(__file__).resolve().parents[
 cookie = ''
 
 def request(path, data=None, authenticated=False):
-    headers = {'Content-Type': 'application/json', 'X-Forwarded-Proto': 'https'}
+    headers = {'Content-Type': 'application/json', 'X-Forwarded-Proto': 'https', 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'}
     if authenticated:
         headers['Cookie'] = cookie
     req = urllib.request.Request(base + path, data=None if data is None else json.dumps(data).encode(), headers=headers)
