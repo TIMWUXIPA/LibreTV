@@ -1,0 +1,93 @@
+{
+  "name": "LibreTV 免费版 6 源（2026-10-23 线上实测）",
+  "version": 2,
+  "sources": [
+    {
+      "name": "暴风",
+      "url": "https://bfzyapi.com/api.php/provide/vod",
+      "isAdult": false
+    },
+    {
+      "name": "极速",
+      "url": "https://jszyapi.com/api.php/provide/vod",
+      "isAdult": false
+    },
+    {
+      "name": "速博",
+      "url": "https://subocaiji.com/api.php/provide/vod",
+      "isAdult": false
+    },
+    {
+      "name": "非凡",
+      "url": "http://cj.ffzyapi.com/api.php/provide/vod",
+      "isAdult": false
+    },
+    {
+      "name": "电影天堂",
+      "url": "https://caiji.dyttzyapi.com/api.php/provide/vod",
+      "isAdult": false
+    },
+    {
+      "name": "金鹰",
+      "url": "http://jyzyapi.com/provide/vod/from/jinyingm3u8",
+      "isAdult": false
+    }
+  ],
+  "liveSources": [
+    {
+      "name": "iptv-org 中国 149台",
+      "url": "https://iptv-org.github.io/iptv/countries/cn.m3u",
+      "epg": "https://epg.pw/xmltv/epg_CN.xml"
+    },
+    {
+      "name": "iptv-org 中文 219台",
+      "url": "https://iptv-org.github.io/iptv/languages/zho.m3u",
+      "epg": "https://epg.pw/xmltv/epg_CN.xml"
+    },
+    {
+      "name": "Guovin 自动更新 839台",
+      "url": "https://guovin.github.io/iptv-api/result.m3u",
+      "epg": "https://epg.pw/xmltv/epg_CN.xml"
+    },
+    {
+      "name": "TDTChannels 571台",
+      "url": "https://www.tdtchannels.com/lists/tv.m3u8",
+      "epg": "https://epg.pw/xmltv/epg_CN.xml"
+    },
+    {
+      "name": "YanG 综合(镜像) 123台",
+      "url": "https://m3u.ibert.me/y_g.m3u",
+      "epg": "https://epg.pw/xmltv/epg_CN.xml"
+    },
+    {
+      "name": "zbds IPTV4 182台",
+      "url": "https://live.zbds.top/tv/iptv4.m3u",
+      "epg": "https://epg.pw/xmltv/epg_CN.xml"
+    },
+    {
+      "name": "vbskycn IPTV4 182台",
+      "url": "https://gh-proxy.com/raw.githubusercontent.com/vbskycn/iptv/refs/heads/master/tv/iptv4.m3u",
+      "epg": "https://epg.pw/xmltv/epg_CN.xml"
+    },
+    {
+      "name": "CCSH live 2646台",
+      "url": "https://cdn.akaere.online/https://raw.githubusercontent.com/CCSH/IPTV/main/live.m3u",
+      "epg": "https://epg.pw/xmltv/epg_CN.xml"
+    },
+    {
+      "name": "m4rio iptv4 1418台",
+      "url": "https://cdn.akaere.online/https://raw.githubusercontent.com/m4rio/izbds.com_iptv/master/tv/iptv4.m3u",
+      "epg": "https://epg.pw/xmltv/epg_CN.xml"
+    },
+    {
+      "name": "taksssss 51zmt 471台",
+      "url": "https://cdn.akaere.online/https://raw.githubusercontent.com/taksssss/tv/main/assets/51zmt.m3u",
+      "epg": "https://epg.pw/xmltv/epg_CN.xml"
+    },
+    {
+      "name": "lemonTV 124台",
+      "url": "https://gh-proxy.org/https://raw.githubusercontent.com/jia070310/lemonTV/main/iptv-fe.m3u",
+      "epg": "https://epg.pw/xmltv/epg_CN.xml"
+    }
+  ]
+}
