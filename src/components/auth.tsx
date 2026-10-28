@@ -7,21 +7,15 @@ import { applyEnvPresets } from '@/lib/subscription-sync';
 import type { AuthStatusResponse } from '@/lib/types';
 import { useToast } from './toast';
 
-/**
- * 认证上下文：
- * - 页面加载时查询 /api/status 判断会话有效性；
- * - 任何 API 返回 401/503 时全局打开登录框（客户端 API 层统一触发，不再散落检查）。
- */
-
 type SetupRequired = boolean;
 
 interface AuthContextValue {
   checked: boolean;
   verified: boolean;
-  /** 服务器未设置 PASSWORD，需要管理员配置 */
   setupRequired: SetupRequired;
-  /** /api/status 返回的应用版本（构建时从 package.json 注入） */
   version: string | null;
+  defaultSubscriptions: { url: string; name?: string }[];
+  defaultTheme: 'light' | 'dark' | 'system' | null;
   openLogin: () => void;
   logout: () => Promise<void>;
 }
@@ -31,6 +25,8 @@ const AuthContext = createContext<AuthContextValue>({
   verified: false,
   setupRequired: false,
   version: null,
+  defaultSubscriptions: [],
+  defaultTheme: null,
   openLogin: () => {},
   logout: async () => {},
 });
@@ -44,11 +40,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [verified, setVerified] = useState(false);
   const [setupRequired, setSetupRequired] = useState(false);
   const [version, setVersion] = useState<string | null>(null);
+  const [defaultSubscriptions, setDefaultSubscriptions] = useState<{ url: string; name?: string }[]>([]);
+  const [defaultTheme, setDefaultTheme] = useState<'light' | 'dark' | 'system' | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // 与 Providers 共用同一 query key 与缓存，避免 /api/status 被请求两次
   useEffect(() => {
     let cancelled = false;
     queryClient
@@ -58,6 +55,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setVerified(s.verified);
         setSetupRequired(!s.passwordRequired);
         setVersion(s.version);
+        setDefaultSubscriptions(Array.isArray(s.defaultSubscriptions) ? s.defaultSubscriptions : []);
+        setDefaultTheme(s.defaultTheme ?? null);
+        window.dispatchEvent(new CustomEvent('libretv:server-defaults', { detail: { theme: s.defaultTheme ?? null } }));
         setChecked(true);
       })
       .catch(() => {
@@ -94,11 +94,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setVerified(true);
     setSetupRequired(false);
     setModalOpen(false);
-    // 登录前以 401 失败的查询（如豆瓣推荐）需要重新拉取
     queryClient.invalidateQueries();
     toast('验证成功', 'success');
-    // 预置订阅（DEFAULT_SUBSCRIPTIONS）的首屏同步发生在登录之前，会 401 静默失败，
-    // 这里用缓存中的 /api/status 补跑一次（缓存缺失时回落为一次请求）
     try {
       const cached = queryClient.getQueryData<AuthStatusResponse>(STATUS_QUERY_KEY);
       const status =
@@ -115,7 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [toast, queryClient]);
 
   return (
-    <AuthContext.Provider value={{ checked, verified, setupRequired, version, openLogin, logout }}>
+    <AuthContext.Provider value={{ checked, verified, setupRequired, version, defaultSubscriptions, defaultTheme, openLogin, logout }}>
       {children}
       {modalOpen && (
         <LoginModal

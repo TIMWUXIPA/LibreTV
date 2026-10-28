@@ -1,0 +1,34 @@
+name: Cloudflare checks
+
+on:
+  push:
+    branches: [deploy/cloudflare]
+  pull_request:
+    branches: [deploy/cloudflare]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run build:cloudflare
+      - name: Check Worker bundle without deploying
+        run: npx --no-install wrangler deploy --dry-run --outdir .wrangler/check
