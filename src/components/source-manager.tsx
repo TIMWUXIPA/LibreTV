@@ -771,7 +771,9 @@ function HomePanel() {
 function SourceSubscriptions() {
   const store = useAppStore();
   const { toast } = useToast();
+  const [pendingRestore, setPendingRestore] = useState(false);
   const [subUrl, setSubUrl] = useState('');
+  const { defaultSubscriptions } = useAuth();
   // 每个订阅独立的同步状态，允许多个订阅并行同步（此前单值状态会串台）
   const [syncing, setSyncing] = useState<Set<string>>(new Set());
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
@@ -803,6 +805,19 @@ function SourceSubscriptions() {
       return;
     }
     void sync(url);
+  };
+
+  const restorePresets = async () => {
+    if (pendingRestore || defaultSubscriptions.length === 0) return;
+    setPendingRestore(true);
+    try {
+      const urls = defaultSubscriptions.map((s) => s.url);
+      store.clearEnvSubsSeen(urls);
+      for (const sub of defaultSubscriptions) await sync(sub.url);
+      toast('已恢复服务器预置订阅', 'success');
+    } finally {
+      setPendingRestore(false);
+    }
   };
 
   // 发布状态：进行中 + 上一次的发布结果（链接、粘贴板来源与条数）
@@ -983,6 +998,16 @@ function SourceSubscriptions() {
           {syncing.size > 0 ? '同步中…' : '订阅'}
         </button>
       </div>
+      {defaultSubscriptions.length > 0 && (
+        <button
+          className="btn-ghost btn-sm mb-3"
+          disabled={pendingRestore || syncing.size > 0}
+          onClick={() => void restorePresets()}
+          title="清除本设备对服务器预置订阅的删除记忆，并立即重新同步"
+        >
+          {pendingRestore ? '恢复中…' : '恢复服务器预置订阅'}
+        </button>
+      )}
       {store.subscriptions.length === 0 ? (
         <p className="text-xs text-faint">
           一份订阅可同时下发点播源与直播源，支持 LibreTV 源列表与 TVBOX 配置（仅导入可直接使用的接口，Spider 类站点自动跳过）；

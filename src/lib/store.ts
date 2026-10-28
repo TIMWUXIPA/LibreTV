@@ -277,6 +277,7 @@ interface AppState extends AppSettings {
   /** 清除全部跳过片段（设置面板的「清除全部」入口） */
   clearAllSkipMarks: () => void;
   markEnvSubsSeen: (urls: string[]) => void;
+  clearEnvSubsSeen: (urls: string[]) => void;
   updateSettings: (patch: Partial<Omit<AppSettings, 'customAPIs' | 'selectedKeys'>>) => void;
 }
 
@@ -735,6 +736,11 @@ export const useAppStore = create<AppState>()(
         const seen = new Set(get().envSubsSeen);
         for (const u of urls) seen.add(u);
         set({ envSubsSeen: [...seen] });
+      },
+
+      clearEnvSubsSeen: (urls) => {
+        const remove = new Set(urls);
+        set({ envSubsSeen: get().envSubsSeen.filter((u) => !remove.has(u)) });
       },
 
       setQuality: (entries) => {
