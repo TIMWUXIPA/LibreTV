@@ -7,14 +7,24 @@ import { applyEnvPresets } from '@/lib/subscription-sync';
 import type { AuthStatusResponse } from '@/lib/types';
 import { useToast } from './toast';
 
+/**
+ * 认证上下文：
+ * - 页面加载时查询 /api/status 判断会话有效性；
+ * - 任何 API 返回 401/503 时全局打开登录框（客户端 API 层统一触发，不再散落检查）。
+ */
+
 type SetupRequired = boolean;
 
 interface AuthContextValue {
   checked: boolean;
   verified: boolean;
+  /** 服务器未设置 PASSWORD，需要管理员配置 */
   setupRequired: SetupRequired;
+  /** /api/status 返回的应用版本（构建时从 package.json 注入） */
   version: string | null;
+  /** 部署者预置订阅，供设置页恢复被用户删除的订阅 */
   defaultSubscriptions: { url: string; name?: string }[];
+  /** 部署者默认主题，供新设备继承 */
   defaultTheme: 'light' | 'dark' | 'system' | null;
   openLogin: () => void;
   logout: () => Promise<void>;
@@ -46,6 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // 与 Providers 共用同一 query key 与缓存，避免 /api/status 被请求两次
   useEffect(() => {
     let cancelled = false;
     queryClient
@@ -94,8 +105,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setVerified(true);
     setSetupRequired(false);
     setModalOpen(false);
+    // 登录前以 401 失败的查询（如豆瓣推荐）需要重新拉取
     queryClient.invalidateQueries();
     toast('验证成功', 'success');
+    // 预置订阅（DEFAULT_SUBSCRIPTIONS）的首屏同步发生在登录之前，会 401 静默失败，
+    // 这里用缓存中的 /api/status 补跑一次（缓存缺失时回落为一次请求）
     try {
       const cached = queryClient.getQueryData<AuthStatusResponse>(STATUS_QUERY_KEY);
       const status =
