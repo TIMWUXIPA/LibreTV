@@ -32,6 +32,7 @@ const status = (over: Partial<AuthStatusResponse> = {}): AuthStatusResponse => (
   defaultSources: [],
   defaultLiveSources: [],
   defaultSubscriptions: [],
+  defaultTheme: null,
   defaultRecommendSource: null,
   defaultImageMode: null,
   ...over,

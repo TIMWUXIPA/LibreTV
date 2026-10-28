@@ -45,6 +45,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setThemeState(stored);
     setResolved(apply(stored));
 
+    const onServerDefaults = (event: Event) => {
+      const choice = (event as CustomEvent<{ theme?: ThemeChoice | null }>).detail?.theme;
+      if (!choice || localStorage.getItem(STORAGE_KEY)) return;
+      localStorage.setItem(STORAGE_KEY, choice);
+      setThemeState(choice);
+      setResolved(apply(choice));
+    };
+    window.addEventListener('libretv:server-defaults', onServerDefaults);
+
     const media = window.matchMedia('(prefers-color-scheme: dark)');
     const onChange = () => {
       const current = (localStorage.getItem(STORAGE_KEY) as ThemeChoice | null) || 'dark';

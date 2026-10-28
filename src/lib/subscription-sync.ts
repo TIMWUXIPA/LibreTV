@@ -56,8 +56,8 @@ export async function syncSourceSubscription(rawUrl: string): Promise<Subscripti
   }
 }
 
-/** 预置订阅超过该间隔未同步时，启动阶段静默刷新一次 */
-const ENV_SUB_RESYNC_MS = 24 * 60 * 60 * 1000;
+/** 预置订阅检查冷却：页面打开/回到前台时最多每 5 分钟拉一次 */
+const ENV_SUB_RESYNC_MS = 5 * 60 * 1000;
 
 /**
  * 部署者通过 DEFAULT_SUBSCRIPTIONS 预置的订阅：启动时自动导入与静默刷新。

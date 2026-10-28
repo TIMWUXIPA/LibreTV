@@ -136,6 +136,8 @@ export interface AuthStatusResponse {
   defaultLiveSources: LiveSourceConfig[];
   /** 部署者通过 DEFAULT_SUBSCRIPTIONS 环境变量预置的 SourceList 订阅链接（未配置时为空数组） */
   defaultSubscriptions: { url: string; name?: string }[];
+  /** 部署者默认主题；仅对未主动设置过的设备生效 */
+  defaultTheme: 'light' | 'dark' | 'system' | null;
   /** 部署者通过 DEFAULT_RECOMMEND_SOURCE 环境变量指定的首页推荐数据源默认值（未配置时为 null） */
   defaultRecommendSource: 'douban' | 'bangumi' | 'hot-list' | null;
   /** 部署者通过 DEFAULT_IMAGE_MODE 环境变量指定的封面图加载方式默认值（未配置时为 null） */
@@ -167,6 +169,7 @@ export interface LiveChannel {
   rawName?: string;
 }
 
+/** 直播播放列表响应 */
 export interface LivePlaylistResponse {
   /** 订阅名（M3U 无名时为空） */
   name?: string;
@@ -174,7 +177,7 @@ export interface LivePlaylistResponse {
   groups: string[];
 }
 
-/** 单条节目单条目（XMLTV programme） */
+/** XMLTV 节目单条目 */
 export interface EpgProgram {
   channelId: string;
   /** epoch ms */

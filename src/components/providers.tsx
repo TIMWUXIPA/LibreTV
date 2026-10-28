@@ -43,6 +43,24 @@ export function Providers({ children }: { children: ReactNode }) {
       .catch(() => {});
   }, [queryClient]);
 
+  useEffect(() => {
+    const refreshPresets = () => {
+      void queryClient
+        .fetchQuery({ queryKey: STATUS_QUERY_KEY, queryFn: () => api.status(), staleTime: 0 })
+        .then((d) => applyEnvPresets(d))
+        .catch(() => {});
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') refreshPresets();
+    };
+    window.addEventListener('focus', refreshPresets);
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      window.removeEventListener('focus', refreshPresets);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, [queryClient]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
