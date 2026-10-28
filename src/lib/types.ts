@@ -169,7 +169,6 @@ export interface LiveChannel {
   rawName?: string;
 }
 
-/** 直播播放列表响应 */
 export interface LivePlaylistResponse {
   /** 订阅名（M3U 无名时为空） */
   name?: string;
@@ -177,7 +176,7 @@ export interface LivePlaylistResponse {
   groups: string[];
 }
 
-/** XMLTV 节目单条目 */
+/** 单条节目单条目（XMLTV programme） */
 export interface EpgProgram {
   channelId: string;
   /** epoch ms */
